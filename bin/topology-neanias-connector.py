@@ -39,9 +39,9 @@ class EOSCReader(object):
             tmp_dict = dict()
 
             tmp_dict['type'] = 'PROJECT'
-            tmp_dict['group'] = 'EOSC'
+            tmp_dict['group'] = 'NEANIAS'
             tmp_dict['subgroup'] = entity['SITENAME-SERVICEGROUP']
-            tmp_dict['tags'] = {'monitored': '1', 'scope': 'EOSC'}
+            tmp_dict['tags'] = {'monitored': '1', 'scope': 'NEANIAS'}
 
             groups.append(tmp_dict)
 
@@ -61,7 +61,7 @@ class EOSCReader(object):
                 tmp_dict['hostname'] = '{1}_{0}'.format(entity['Service Unique ID'], self._construct_fqdn(info_url))
             else:
                 tmp_dict['hostname'] = self._construct_fqdn(entity['URL'])
-            tmp_dict['tags'] = {'scope': 'EOSC', 'monitored': '1', 'info.URL': info_url}
+            tmp_dict['tags'] = {'scope': 'NEANIAS', 'monitored': '1', 'info.URL': info_url}
 
             groups.append(tmp_dict)
 
@@ -69,7 +69,7 @@ class EOSCReader(object):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="""Fetch and construct entities from EOSC-PORTAL feed""")
+    parser = argparse.ArgumentParser(description="""Fetch and construct entities from NEANIAS feed""")
     parser.add_argument('-c', dest='custconf', nargs=1, metavar='customer.conf', help='path to customer configuration file', type=str, required=False)
     parser.add_argument('-g', dest='gloconf', nargs=1, metavar='global.conf', help='path to global configuration file', type=str, required=False)
     parser.add_argument('-d', dest='date', metavar='YEAR-MONTH-DAY', help='write data for this date', type=str, required=False)
@@ -112,10 +112,10 @@ def main():
             feeds = confcust.get_mapfeedjobs(sys.argv[0])
             if is_feed(feeds.keys()[0]):
                 remote_topo = urlparse(feeds.keys()[0])
-                res = input.connection(logger, 'EOSC', globopts, remote_topo.scheme, remote_topo.netloc, remote_topo.path)
+                res = input.connection(logger, 'NEANIAS', globopts, remote_topo.scheme, remote_topo.netloc, remote_topo.path)
                 if not res:
                     raise input.ConnectorError()
-                doc = input.parse_json(logger, 'EOSC', globopts, res,
+                doc = input.parse_json(logger, 'NEANIAS', globopts, res,
                                        remote_topo.scheme + '://' +
                                        remote_topo.netloc + remote_topo.path)
 		eosc = EOSCReader(doc, uidservtype, fetchtype)

@@ -87,7 +87,6 @@ class GOCDBReader(object):
 
             doc = input.parse_xml(logger, module_class_name(self), globopts,
                                   res, self._o.scheme + '://' + self._o.netloc + DOWNTIMEPI)
-
             if not doc:
                 raise input.ConnectorError()
 
