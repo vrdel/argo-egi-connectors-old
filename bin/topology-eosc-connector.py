@@ -118,7 +118,7 @@ def main():
                 doc = input.parse_json(logger, 'EOSC', globopts, res,
                                        remote_topo.scheme + '://' +
                                        remote_topo.netloc + remote_topo.path)
-		eosc = EOSCReader(doc, uidservtype, fetchtype)
+                eosc = EOSCReader(doc, uidservtype, fetchtype)
                 group_groups = eosc.get_groupgroups()
                 group_endpoints = eosc.get_groupendpoints()
                 state = True
