@@ -200,6 +200,21 @@ class GOCDBReader:
                               self._o.scheme + '://' + self._o.netloc + pi)
         return doc
 
+    def _parse_extensions(self, extensionsNode):
+        extensions_dict = dict()
+
+        for extension in extensionsNode:
+            if extension.nodeName == 'EXTENSION':
+                key, value = None, None
+                for ext_node in extension.childNodes:
+                    if ext_node.nodeName == 'KEY':
+                        key = ext_node.childNodes[0].nodeValue
+                    if ext_node.nodeName == 'VALUE':
+                        value = ext_node.childNodes[0].nodeValue
+                    extensions_dict.update({key: value})
+
+        return extensions_dict
+
     def _get_service_endpoints(self, serviceList, scope, doc):
         try:
             services = doc.getElementsByTagName('SERVICE_ENDPOINT')
@@ -307,7 +322,10 @@ class GOCDBReader:
                 groupList[groupId]['services'] = []
                 services = group.getElementsByTagName('SERVICE_ENDPOINT')
                 for service in services:
-                    serviceDict = {}
+                    serviceDict = dict()
+                    serviceDict['extensions'] = dict()
+                    extensions = service.getElementsByTagName('EXTENSIONS')[0].childNodes
+                    r = self._parse_extensions(extensions)
                     serviceDict['hostname'] = getText(service.getElementsByTagName('HOSTNAME')[0].childNodes)
                     try:
                         serviceDict['service_id'] = getText(service.getElementsByTagName('PRIMARY_KEY')[0].childNodes)
