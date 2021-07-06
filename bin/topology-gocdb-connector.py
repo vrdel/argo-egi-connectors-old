@@ -109,7 +109,6 @@ class GOCDBReader:
                     g['tags'].update({
                         'info.ext.' + key: value
                     })
-
                 groups.append(g)
 
         return groups
@@ -133,7 +132,6 @@ class GOCDBReader:
                 g['tags'] = {'monitored' : '1' if d['monitored'].lower() == 'Y'.lower() or \
                                                   d['monitored'].lower() == 'True'.lower() else '0',
                             'scope' : d['scope']}
-                groupofgroups.append(g)
         else:
             gg = []
             for scope in self.scopes:
@@ -149,6 +147,10 @@ class GOCDBReader:
                              'scope' : gr['scope'], \
                              'infrastructure' : gr['infrastructure']}
 
+                for key, value in gr['extensions'].items():
+                    g['tags'].update({
+                        'info.ext.' + key: value
+                    })
                 groupofgroups.append(g)
 
         return groupofgroups
@@ -177,6 +179,10 @@ class GOCDBReader:
                                              gr['monitored'] == 'True' else '0', \
                          'production': '1' if gr['production'] == 'Y' or \
                                               gr['production'] == 'True' else '0'}
+            for key, value in gr['extensions'].items():
+                g['tags'].update({
+                    'info.ext.' + key: value
+                })
             groupofendpoints.append(g)
 
         return groupofendpoints
