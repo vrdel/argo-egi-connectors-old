@@ -134,6 +134,7 @@ class GOCDBReader:
                 g['tags'] = {'monitored' : '1' if d['monitored'].lower() == 'Y'.lower() or \
                                                   d['monitored'].lower() == 'True'.lower() else '0',
                             'scope' : d['scope']}
+                groupofgroups.append(g)
         else:
             gg = []
             for scope in self.scopes:
