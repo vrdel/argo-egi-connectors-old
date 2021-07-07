@@ -478,6 +478,7 @@ def main():
     for feed, jobcust in feeds.items():
         scopes = confcust.get_feedscopes(feed, jobcust)
         paging = confcust.is_paginated(feed, jobcust)
+        pass_ext = confcust.pass_extensions(jobcust)
         auth_custopts = confcust.get_authopts(feed, jobcust)
         auth_opts = cglob.merge_opts(auth_custopts, 'authentication')
         auth_complete, missing = cglob.is_complete(auth_opts, 'authentication')

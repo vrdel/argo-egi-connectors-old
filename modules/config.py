@@ -222,7 +222,7 @@ class CustomerConf(object):
     _cust_optional = ['AmsHost', 'AmsProject', 'AmsToken', 'AmsTopic',
                       'AmsPackSingleMsg', 'AuthenticationUsePlainHttpAuth',
                       'AuthenticationHttpUser', 'AuthenticationHttpPass',
-                      'WebAPIToken', 'WeightsEmpty', 'DowntimesEmpty']
+                      'WebAPIToken', 'WeightsEmpty', 'DowntimesEmpty', 'PassExtensions']
     tenantdir = ''
     deftopofeed = 'https://goc.egi.eu/gocdbpi/'
 
@@ -286,6 +286,7 @@ class CustomerConf(object):
                     self._cust[section].update(AuthOpts=auth)
                     self._cust[section].update(WebAPIOpts=webapi)
                     self._cust[section].update(EmptyDataOpts=empty_data)
+                    self._cust[section].update(PassExtensions=optopts.get('PassExtensions'.lower(), False))
 
                 if self._custattrs:
                     for attr in self._custattrs:
@@ -344,6 +345,13 @@ class CustomerConf(object):
             return self._cust[cust]['AmsOpts']
         else:
             return dict()
+
+    def pass_extensions(self, jobcust):
+        for job, cust in jobcust:
+            if 'PassExtensions' in self._cust[cust]:
+                return eval(self._cust[cust]['PassExtensions'])
+            else:
+                return False
 
     def get_authopts(self, feed, jobcust):
         for job, cust in jobcust:

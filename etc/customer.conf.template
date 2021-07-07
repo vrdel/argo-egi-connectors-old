@@ -2,6 +2,7 @@
 Name = EGI
 OutputDir = /var/lib/argo-connectors/EGI/
 Jobs = JOB_EGICritical, JOB_EGIFedcloud, JOB_EOSCCritical
+PassExtensions=True
 
 [JOB_EGICritical]
 Dirname = EGI_Critical
