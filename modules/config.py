@@ -428,7 +428,7 @@ class CustomerConf(object):
             if match is not None:
                 for m in match:
                     tags.update({m[0]: [e.strip('() ') for e in m[1].split(',')]})
-            match = re.findall('([\w]+)\s*:\s*([\w\.\-\_]+)', tagstr)
+            match = re.findall('([\w\.]+)\s*:\s*([\w\.\-\_\/]+)', tagstr)
             if match is not None:
                 for m in match:
                     tags.update({m[0]: m[1]})
