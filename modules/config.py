@@ -348,10 +348,15 @@ class CustomerConf(object):
 
     def pass_extensions(self, jobcust):
         for job, cust in jobcust:
-            if 'PassExtensions' in self._cust[cust]:
-                return eval(self._cust[cust]['PassExtensions'])
-            else:
-                return False
+            try:
+                if 'PassExtensions' in self._cust[cust]:
+                    return eval(self._cust[cust]['PassExtensions'])
+                else:
+                    return False
+            except NameError:
+                self.logger.error("Could not parse PassExtensions value for customer: %s" % (cust))
+                raise SystemExit(1)
+
 
     def get_authopts(self, feed, jobcust):
         for job, cust in jobcust:
