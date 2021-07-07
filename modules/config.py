@@ -350,7 +350,10 @@ class CustomerConf(object):
         for job, cust in jobcust:
             try:
                 if 'PassExtensions' in self._cust[cust]:
-                    return eval(self._cust[cust]['PassExtensions'])
+                    try:
+                        return eval(self._cust[cust]['PassExtensions'])
+                    except TypeError:
+                        return self._cust[cust]['PassExtensions']
                 else:
                     return False
             except NameError:
