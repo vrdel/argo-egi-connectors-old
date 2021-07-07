@@ -65,7 +65,7 @@ def getText(nodelist):
 
 
 class GOCDBReader:
-    def __init__(self, feed, scopes, paging=False, auth=None):
+    def __init__(self, feed, scopes, paging=False, auth=None, extensions=False):
         self._o = urlparse(feed)
         self.scopes = scopes if scopes else set(['NoScope'])
         for scope in self.scopes:
@@ -77,6 +77,7 @@ class GOCDBReader:
         self.state = True
         self.paging = paging
         self.custauth = auth
+        self.extensions = extensions
 
     def getGroupOfServices(self, uidservtype=False):
         if not self.fetched:
@@ -105,10 +106,11 @@ class GOCDBReader:
                                                  service['monitored'].lower() == 'True'.lower() else '0', \
                             'production' : '1' if service['production'].lower() == 'Y'.lower() or \
                                                   service['production'].lower() == 'True'.lower() else '0'}
-                for key, value in service['extensions'].items():
-                    g['tags'].update({
-                        'info.ext.' + key: value
-                    })
+                if self.extensions:
+                    for key, value in service['extensions'].items():
+                        g['tags'].update({
+                            'info.ext.' + key: value
+                        })
                 groups.append(g)
 
         return groups
@@ -147,10 +149,11 @@ class GOCDBReader:
                              'scope' : gr['scope'], \
                              'infrastructure' : gr['infrastructure']}
 
-                for key, value in gr['extensions'].items():
-                    g['tags'].update({
-                        'info.ext.' + key: value
-                    })
+                if self.extensions:
+                    for key, value in gr['extensions'].items():
+                        g['tags'].update({
+                            'info.ext.' + key: value
+                        })
                 groupofgroups.append(g)
 
         return groupofgroups
@@ -179,10 +182,11 @@ class GOCDBReader:
                                              gr['monitored'] == 'True' else '0', \
                          'production': '1' if gr['production'] == 'Y' or \
                                               gr['production'] == 'True' else '0'}
-            for key, value in gr['extensions'].items():
-                g['tags'].update({
-                    'info.ext.' + key: value
-                })
+            if self.extensions:
+                for key, value in gr['extensions'].items():
+                    g['tags'].update({
+                        'info.ext.' + key: value
+                    })
             groupofendpoints.append(g)
 
         return groupofendpoints
@@ -232,7 +236,6 @@ class GOCDBReader:
             services = doc.getElementsByTagName('SERVICE_ENDPOINT')
             for service in services:
                 serviceId = ''
-                extensions = service.getElementsByTagName('EXTENSIONS')[0].childNodes
                 if service.getAttributeNode('PRIMARY_KEY'):
                     serviceId = str(service.attributes['PRIMARY_KEY'].value)
                 if serviceId not in serviceList:
@@ -244,7 +247,9 @@ class GOCDBReader:
                 serviceList[serviceId]['site'] = getText(service.getElementsByTagName('SITENAME')[0].childNodes)
                 serviceList[serviceId]['roc'] = getText(service.getElementsByTagName('ROC_NAME')[0].childNodes)
                 serviceList[serviceId]['service_id'] = serviceId
-                serviceList[serviceId]['extensions'] = self._parse_extensions(extensions)
+                if self.extensions:
+                    extensions = service.getElementsByTagName('EXTENSIONS')[0].childNodes
+                    serviceList[serviceId]['extensions'] = self._parse_extensions(extensions)
                 serviceList[serviceId]['scope'] = scope.split('=')[1]
                 serviceList[serviceId]['sortId'] = serviceList[serviceId]['hostname'] + '-' + serviceList[serviceId]['type'] + '-' + serviceList[serviceId]['site']
 
@@ -284,14 +289,15 @@ class GOCDBReader:
             sites = doc.getElementsByTagName('SITE')
             for site in sites:
                 siteName = site.getAttribute('NAME')
-                extensions = site.getElementsByTagName('EXTENSIONS')[0].childNodes
                 if siteName not in siteList:
                     siteList[siteName] = {'site': siteName}
                 siteList[siteName]['infrastructure'] = getText(site.getElementsByTagName('PRODUCTION_INFRASTRUCTURE')[0].childNodes)
                 siteList[siteName]['certification'] = getText(site.getElementsByTagName('CERTIFICATION_STATUS')[0].childNodes)
                 siteList[siteName]['ngi'] = getText(site.getElementsByTagName('ROC')[0].childNodes)
                 siteList[siteName]['scope'] = scope.split('=')[1]
-                siteList[siteName]['extensions'] = self._parse_extensions(extensions)
+                if self.extensions:
+                    extensions = site.getElementsByTagName('EXTENSIONS')[0].childNodes
+                    siteList[siteName]['extensions'] = self._parse_extensions(extensions)
 
         except (KeyError, IndexError, TypeError, AttributeError, AssertionError) as e:
             logger.error(module_class_name(self) + 'Customer:%s Job:%s : Error parsing feed %s - %s' % (logger.customer, logger.job, self._o.scheme + '://' + self._o.netloc + SITESPI,
@@ -339,7 +345,6 @@ class GOCDBReader:
                 services = group.getElementsByTagName('SERVICE_ENDPOINT')
                 for service in services:
                     serviceDict = dict()
-                    extensions = service.getElementsByTagName('EXTENSIONS')[0].childNodes
                     serviceDict['hostname'] = getText(service.getElementsByTagName('HOSTNAME')[0].childNodes)
                     try:
                         serviceDict['service_id'] = getText(service.getElementsByTagName('PRIMARY_KEY')[0].childNodes)
@@ -348,7 +353,9 @@ class GOCDBReader:
                     serviceDict['type'] = getText(service.getElementsByTagName('SERVICE_TYPE')[0].childNodes)
                     serviceDict['monitored'] = getText(service.getElementsByTagName('NODE_MONITORED')[0].childNodes)
                     serviceDict['production'] = getText(service.getElementsByTagName('IN_PRODUCTION')[0].childNodes)
-                    serviceDict['extensions'] = self._parse_extensions(extensions)
+                    if self.extensions:
+                        extensions = service.getElementsByTagName('EXTENSIONS')[0].childNodes
+                        serviceDict['extensions'] = self._parse_extensions(extensions)
                     groupList[groupId]['services'].append(serviceDict)
 
         except (KeyError, IndexError, TypeError, AttributeError, AssertionError) as e:
@@ -483,7 +490,7 @@ def main():
         auth_opts = cglob.merge_opts(auth_custopts, 'authentication')
         auth_complete, missing = cglob.is_complete(auth_opts, 'authentication')
         if auth_complete:
-            gocdb = GOCDBReader(feed, scopes, paging, auth=auth_opts)
+            gocdb = GOCDBReader(feed, scopes, paging, auth=auth_opts, extensions=pass_ext)
         else:
             logger.error('%s options incomplete, missing %s' % ('authentication', ' '.join(missing)))
             continue
