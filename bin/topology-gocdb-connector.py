@@ -436,7 +436,9 @@ class TopoFilter(object):
     def filter_tags(self, tags, listofelem):
         for attr in tags.keys():
             def getit(elem):
-                value = elem['tags'][attr.lower()]
+                value = elem['tags'].get(attr, False)
+                if not value:
+                    return False
                 if value == '1':
                     value = 'Y'
                 elif value == '0':
