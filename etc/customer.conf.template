@@ -2,14 +2,14 @@
 Name = EGI
 OutputDir = /var/lib/argo-connectors/EGI/
 Jobs = JOB_EGICritical, JOB_EGIFedcloud, JOB_EOSCCritical
-PassExtensions=True
+PassExtensions = True
 
 [JOB_EGICritical]
 Dirname = EGI_Critical
 Profiles = ARGO_MON_CRITICAL
 MetricProfileNamespace = ch.cern.SAM
 TopoFetchType = Sites
-TopoSelectGroupOfEndpoints = Production:Y, Monitored:Y, Scope:EGI
+TopoSelectGroupOfEndpoints = Production:Y, Monitored:Y, Scope:EGI, info.ext.SE_PATH = path
 TopoSelectGroupOfGroups = NGI:EGI.eu, Certification:Certified, Infrastructure:Production, Scope:EGI
 TopoFeedPaging = True
 
