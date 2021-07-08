@@ -427,7 +427,7 @@ class CustomerConf(object):
         tags = {}
         if option in self._jobs[job].keys():
             tagstr = self._jobs[job][option]
-            match = re.findall("(\w+)\s*:\s*(\(.*?\))", tagstr)
+            match = re.findall("([\w\.]+)\s*:\s*(\(.*?\))", tagstr)
             if match is not None:
                 for m in match:
                     tags.update({m[0]: [e.strip('() ') for e in m[1].split(',')]})
