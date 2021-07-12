@@ -222,7 +222,7 @@ class CustomerConf(object):
     _cust_optional = ['AmsHost', 'AmsProject', 'AmsToken', 'AmsTopic',
                       'AmsPackSingleMsg', 'AuthenticationUsePlainHttpAuth',
                       'AuthenticationHttpUser', 'AuthenticationHttpPass',
-                      'WebAPIToken', 'WeightsEmpty', 'DowntimesEmpty']
+                      'WebAPIToken', 'WeightsEmpty', 'DowntimesEmpty', 'PassExtensions']
     tenantdir = ''
     deftopofeed = 'https://goc.egi.eu/gocdbpi/'
 
@@ -286,6 +286,7 @@ class CustomerConf(object):
                     self._cust[section].update(AuthOpts=auth)
                     self._cust[section].update(WebAPIOpts=webapi)
                     self._cust[section].update(EmptyDataOpts=empty_data)
+                    self._cust[section].update(PassExtensions=optopts.get('PassExtensions'.lower(), False))
 
                 if self._custattrs:
                     for attr in self._custattrs:
@@ -344,6 +345,21 @@ class CustomerConf(object):
             return self._cust[cust]['AmsOpts']
         else:
             return dict()
+
+    def pass_extensions(self, jobcust):
+        for job, cust in jobcust:
+            try:
+                if 'PassExtensions' in self._cust[cust]:
+                    try:
+                        return eval(self._cust[cust]['PassExtensions'])
+                    except TypeError:
+                        return self._cust[cust]['PassExtensions']
+                else:
+                    return False
+            except NameError:
+                self.logger.error("Could not parse PassExtensions value for customer: %s" % (cust))
+                raise SystemExit(1)
+
 
     def get_authopts(self, feed, jobcust):
         for job, cust in jobcust:
@@ -411,11 +427,11 @@ class CustomerConf(object):
         tags = {}
         if option in self._jobs[job].keys():
             tagstr = self._jobs[job][option]
-            match = re.findall("(\w+)\s*:\s*(\(.*?\))", tagstr)
+            match = re.findall("([\w\.]+)\s*:\s*(\(.*?\))", tagstr)
             if match is not None:
                 for m in match:
                     tags.update({m[0]: [e.strip('() ') for e in m[1].split(',')]})
-            match = re.findall('([\w]+)\s*:\s*([\w\.\-\_]+)', tagstr)
+            match = re.findall('([\w\.]+)\s*:\s*([\w\.\-\_\/]+)', tagstr)
             if match is not None:
                 for m in match:
                     tags.update({m[0]: m[1]})

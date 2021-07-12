@@ -1,5 +1,5 @@
 Name: argo-egi-connectors
-Version: 1.7.4
+Version: 1.7.5
 Release: 1%{?dist}
 Group: EGI/SA4
 License: ASL 2.0
@@ -46,6 +46,8 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0755,root,root) %dir %{_localstatedir}/log/argo-connectors/
 
 %changelog
+* Mon Jul 12 2021 Daniel Vrcic <dvrcic@srce.hr> - 1.7.5-1%{dist}
+- pass EXTENSIONS  
 * Mon Mar 30 2020 Daniel Vrcic <dvrcic@srce.hr> - 1.7.4-1%{dist}
 - ARGO-2247 Pass URL from EOSC topology
 - ARGO-2225 Support for creating empty weights and downtimes data
