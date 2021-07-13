@@ -109,7 +109,7 @@ class GOCDBReader:
                 if self.extensions:
                     for key, value in service['extensions'].items():
                         g['tags'].update({
-                            'info.ext.' + key: value
+                            'info_ext_' + key: value
                         })
                 groups.append(g)
 
@@ -153,7 +153,7 @@ class GOCDBReader:
                 if self.extensions:
                     for key, value in gr['extensions'].items():
                         g['tags'].update({
-                            'info.ext.' + key: value
+                            'info_ext_' + key: value
                         })
                 groupofgroups.append(g)
 
@@ -186,7 +186,7 @@ class GOCDBReader:
             if self.extensions:
                 for key, value in gr['extensions'].items():
                     g['tags'].update({
-                        'info.ext.' + key: value
+                        'info_ext_' + key: value
                     })
             groupofendpoints.append(g)
 
